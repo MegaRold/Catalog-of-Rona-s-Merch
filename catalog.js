@@ -84,6 +84,11 @@ function createProductCard(product) {
     price.textContent = product.price;
     card.appendChild(price);
 
+    const quantity = document.createElement("p");
+    quantity.className = "Product-Quantity";
+    quantity.textContent = `Quantity: ${product.quantity}`;
+    card.appendChild(quantity);
+
     return card;
 }
 
@@ -110,6 +115,7 @@ async function loadCatalog() {
         const descriptionColumn = column("description");
         const priceColumn = column("price");
         const imageColumn = column("image");
+        const quantityColumn = column("quantity");
 
         if (categoryColumn === -1 || nameColumn === -1 || priceColumn === -1) {
             throw new Error("The first row must include category, name, and price columns.");
@@ -124,11 +130,20 @@ async function loadCatalog() {
                 continue;
             }
 
+            const quantityValue = quantityColumn === -1 ? "" : (cells[quantityColumn] || "").trim();
+            const quantity = quantityColumn === -1
+                ? "Not listed"
+                : quantityValue === ""
+                    ? "Not set"
+                    : /^\d+$/.test(quantityValue)
+                        ? quantityValue
+                        : "Invalid";
             const product = {
                 name: (cells[nameColumn] || "").trim(),
                 description: descriptionColumn === -1 ? "" : (cells[descriptionColumn] || "").trim(),
                 price: (cells[priceColumn] || "").trim(),
-                image: imageColumn === -1 ? "" : (cells[imageColumn] || "").trim()
+                image: imageColumn === -1 ? "" : (cells[imageColumn] || "").trim(),
+                quantity
             };
 
             if (!product.name || !product.price) {
@@ -149,6 +164,9 @@ async function loadCatalog() {
             if (incompleteRows > 0) {
                 status.textContent += ` Skipped ${incompleteRows} incomplete row${incompleteRows === 1 ? "" : "s"}.`;
             }
+        }
+        if (quantityColumn === -1) {
+            status.textContent += " Add a quantity column to the sheet to show stock counts.";
         }
     } catch (error) {
         console.error("Unable to load the product sheet:", error);

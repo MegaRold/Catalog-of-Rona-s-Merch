@@ -171,6 +171,14 @@ margin: 2px;
 .Product-Price {
   font-weight: bold;
 }
+.Product-Quantity {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #e6f4f1;
+  color: #145b52;
+  font-weight: 700;
+}
 img {
   max-width: 100%;
   height: auto;
